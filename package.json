@@ -1,4 +1,17 @@
 {
+  "name": "showroom",
+  "version": "1.0.0",
+  "description": "app showroom",
+  "keywords": [],
+  "license": "ISC",
+  "author": "Julieta Mendieta",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",
