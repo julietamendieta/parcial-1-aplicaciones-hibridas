@@ -1,6 +1,6 @@
 import Client from "../models/ClientModel.js";
 
-class AppointmentController{
+class ClientController{
     async getAll(req, res){
         try{
             const clients = await Client.find();

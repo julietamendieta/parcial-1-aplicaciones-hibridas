@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from "dotenv";
 import routerAPI from './routes/index.js';
 import mongoose from 'mongoose';
-import { connectDB } from './config/db.js';
+import connectDB from './config/db.js';
 
 dotenv.config(); //--> normalmente, se pone en un archivo aparte
 
