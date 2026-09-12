@@ -1,4 +1,5 @@
 import Employee from "../models/EmployeeModel.js";
+import Appointment from "../models/AppointmentModel.js";
 
 class EmployeeController{
     async getAll(req, res){
@@ -12,7 +13,7 @@ class EmployeeController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al obtener carreras.'
+                message: 'Error al obtener la lista de empleados.'
             })
         }
     }
@@ -24,7 +25,7 @@ class EmployeeController{
             
             if(!Employee){
                 return res.status(404).json({
-                    message: 'Not Found',
+                    message: 'No Encontrado.',
                 });
             }
             res.json({
@@ -35,19 +36,39 @@ class EmployeeController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al obtener la materia.'
+                message: 'Error al obtener el empleado.'
             })
         }
     }
 
+    async getApptbyEmployee(req, res){
+        try{
+            const employeeid = req.params.employeeid;
+            
+            const filter = {employee:employeeid};
+
+            const appts = await Appointment.find(filter).populate(['client','employee']);
+
+            res.json({
+                message: 'success',
+                data: appts
+            })
+        }catch (error){
+            res.status(500).json({
+                message: 'Error al obtener los turnos asignados a este empleado.'
+            })
+        }
+    }
+
+
     async create(req, res){
         try{
-            const {name, duration, hours} = req.body;
+            const {name, email, tel} = req.body;
             
-            if( !name || !duration || !hours){
-                return response.status(403).send("Faltan parámetros")
+            if( !name || !email || !tel){
+                return response.status(403).send("Complete todos los campos obligatorios.")
             }
-            const Employee = await Employee.create({name, duration, hours});
+            const Employee = await Employee.create({name, email, tel});
             res.status(201).json({
                 message: 'success',
                 data: Employee
@@ -55,7 +76,7 @@ class EmployeeController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al crear la materia.'
+                message: 'Error al crear el empleado.'
             })
         }
     }
@@ -63,12 +84,12 @@ class EmployeeController{
     async update(req, res){
         try{
             const id = req.params.id;
-            const {name, duration, hours, active} = req.body;
+            const {name, email, tel} = req.body;
             
-            if( !name || !duration || !hours || !active){
-                return response.status(403).send("Faltan parámetros")
+            if( !name || !email || !tel){
+                return response.status(403).send("Complete todos los campos obligatorios.")
             }
-            const Employee = await Employee.findByIdAndUpdate(id, {name, duration, hours, active}, {new: true});
+            const Employee = await Employee.findByIdAndUpdate(id, {name, email, tel}, {new: true});
 
             res.json({
                 message: 'success',
@@ -77,7 +98,7 @@ class EmployeeController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al actualizar la materia.'
+                message: 'Error al actualizar los datos del empleado.'
             })
         }
     }
@@ -89,7 +110,7 @@ class EmployeeController{
 
             if(!Employee){
                 return res.status(404).json({
-                message: 'Materia no encontrada'
+                message: 'Empleado no encontrado.'
             })
             }
             res.json({
@@ -98,7 +119,7 @@ class EmployeeController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al eliminar la materia.'
+                message: 'Error al eliminar el empleado.'
             })
         }
     }

@@ -8,6 +8,16 @@ const AppointmentSchema = new mongoose.Schema({
     duration: {
         type: Number,
         required: true
+    },
+    client: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Client',
+        required: true
+    },
+    employee: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Employee',
+        required: true
     }
 });
 

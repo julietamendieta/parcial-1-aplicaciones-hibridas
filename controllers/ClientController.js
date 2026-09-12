@@ -1,4 +1,6 @@
 import Client from "../models/ClientModel.js";
+import Appointment from "../models/AppointmentModel.js";
+import bcrypt from 'bcrypt';
 
 class ClientController{
     async getAll(req, res){
@@ -12,7 +14,7 @@ class ClientController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al obtener carreras.'
+                message: 'Error al obtener la lista de clientes.'
             })
         }
     }
@@ -24,7 +26,7 @@ class ClientController{
             
             if(!Client){
                 return res.status(404).json({
-                    message: 'Not Found',
+                    message: 'No encontrado.',
                 });
             }
             res.json({
@@ -35,49 +37,77 @@ class ClientController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al obtener la materia.'
+                message: 'Error al obtener el cliente.'
+            })
+        }
+    }
+
+    async getApptbyClient(req, res){
+        try{
+            const clientid = req.params.clientid;
+            
+            const filter = {client:clientid};
+
+            const appts = await Appointment.find(filter).populate(['client','employee']);
+
+            res.json({
+                message: 'success',
+                data: appts
+            })
+        }catch (error){
+            res.status(500).json({
+                message: 'Error al obtener los turnos asignados a este empleado.'
             })
         }
     }
 
     async create(req, res){
         try{
-            const {name, duration, hours} = req.body;
-            
-            if( !name || !duration || !hours){
-                return response.status(403).send("Faltan parámetros")
-            }
-            const Client = await Client.create({name, duration, hours});
-            res.status(201).json({
-                message: 'success',
-                data: Client
-            })
+            const {body} = req;
+            const {name, email, password, tel} = body;
 
+            if( !name || !email || !password || !tel){
+                return res.status(403).send("Complete todos los campor obligatorios.")
+            }
+            const passwordHash = await bcrypt.hash(password, 10);
+            const newClient = new Client({
+                name,
+                email,
+                password: passwordHash,
+                tel
+            })
+            newClient.save();
+            const id = newClient._id;
+            res.send(`Cliente registrado con el ID: ${id}`)
         }catch(error){
             res.status(500).json({
-                message: 'Error al crear la materia.'
+                message: 'Error al crear el cliente.'
             })
         }
     }
 
     async update(req, res){
         try{
-            const id = req.params.id;
-            const {name, duration, hours, active} = req.body;
-            
-            if( !name || !duration || !hours || !active){
+            const {id} = req.params;
+            const {body} = request;
+            const {name, email, password, tel} = body;
+
+            if( !name || !email || !password || !tel){
                 return response.status(403).send("Faltan parámetros")
             }
-            const Client = await Client.findByIdAndUpdate(id, {name, duration, hours, active}, {new: true});
-
-            res.json({
-                message: 'success',
-                data: Client
-            })
-
+            const passwordHash = await bcrypt.hash(password, 10);
+            const data = {
+                name,
+                email,
+                password: passwordHash,
+                tel
+            }
+            const client = await Client.findByIdAndUpdate(id, data);
+            client.save();
+            response.status(200).json({message: 'Datos actualizados', data: {}});
         }catch(error){
             res.status(500).json({
-                message: 'Error al actualizar la materia.'
+                message: 'Error al actualizar los datos del cliente.'
             })
         }
     }
@@ -89,7 +119,7 @@ class ClientController{
 
             if(!Client){
                 return res.status(404).json({
-                message: 'Materia no encontrada'
+                message: 'Cliente no encontrado.'
             })
             }
             res.json({
@@ -98,7 +128,7 @@ class ClientController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al eliminar la materia.'
+                message: 'Error al eliminarel cliente.'
             })
         }
     }

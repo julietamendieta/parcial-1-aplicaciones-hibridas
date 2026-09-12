@@ -3,7 +3,7 @@ import Appointment from "../models/AppointmentModel.js";
 class AppointmentController{
     async getAll(req, res){
         try{
-            const appointments = await Appointment.find();
+            const appointments = await Appointment.find().populate(['client','employee']);
 
             res.json({
                 message: 'success',
@@ -12,7 +12,7 @@ class AppointmentController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al obtener carreras.'
+                message: 'Error al obtener la lista de turnos.'
             })
         }
     }
@@ -20,11 +20,11 @@ class AppointmentController{
     async getById(req, res){
         try{
             const id = req.params.id;
-            const Appointment = await Appointment.findById(id);
+            const Appointment = await Appointment.findById(id).populate(['client','employee']);
             
             if(!Appointment){
                 return res.status(404).json({
-                    message: 'Not Found',
+                    message: 'No encontrado.',
                 });
             }
             res.json({
@@ -35,19 +35,19 @@ class AppointmentController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al obtener la materia.'
+                message: 'Error al obtener el turno.'
             })
         }
     }
 
     async create(req, res){
         try{
-            const {name, duration, hours} = req.body;
+            const {time, duration, client} = req.body;
             
-            if( !name || !duration || !hours){
-                return response.status(403).send("Faltan parámetros")
+            if( !time || !duration || !client){
+                return response.status(403).send("Complete todos los campos obligatorios.")
             }
-            const Appointment = await Appointment.create({name, duration, hours});
+            const Appointment = await Appointment.create({time, duration, client});
             res.status(201).json({
                 message: 'success',
                 data: Appointment
@@ -55,7 +55,7 @@ class AppointmentController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al crear la materia.'
+                message: 'Error al crear el turno.'
             })
         }
     }
@@ -63,12 +63,12 @@ class AppointmentController{
     async update(req, res){
         try{
             const id = req.params.id;
-            const {name, duration, hours, active} = req.body;
+            const {time, duration, client} = req.body;
             
-            if( !name || !duration || !hours || !active){
-                return response.status(403).send("Faltan parámetros")
+            if( !time || !duration || !client){
+                return response.status(403).send("Complete todos los campos obligatorios.")
             }
-            const Appointment = await Appointment.findByIdAndUpdate(id, {name, duration, hours, active}, {new: true});
+            const Appointment = await Appointment.findByIdAndUpdate(id, {time, duration, client}, {new: true});
 
             res.json({
                 message: 'success',
@@ -77,7 +77,7 @@ class AppointmentController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al actualizar la materia.'
+                message: 'Error al actualizar el turno.'
             })
         }
     }
@@ -89,7 +89,7 @@ class AppointmentController{
 
             if(!Appointment){
                 return res.status(404).json({
-                message: 'Materia no encontrada'
+                message: 'Turno no encontrado.'
             })
             }
             res.json({
@@ -98,7 +98,7 @@ class AppointmentController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al eliminar la materia.'
+                message: 'Error al eliminar el turno.'
             })
         }
     }
