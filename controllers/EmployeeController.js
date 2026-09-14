@@ -21,9 +21,9 @@ class EmployeeController{
     async getById(req, res){
         try{
             const id = req.params.id;
-            const Employee = await Employee.findById(id);
+            const employee = await Employee.findById(id);
             
-            if(!Employee){
+            if(!employee){
                 return res.status(404).json({
                     message: 'No Encontrado.',
                 });
@@ -44,6 +44,14 @@ class EmployeeController{
     async getApptbyEmployee(req, res){
         try{
             const employeeid = req.params.employeeid;
+
+            const employeeExists = await Employee.findById(employeeid);
+
+            if(!employeeExists){
+                return res.status(404).json({
+                    message: 'No hay ningún empleado registrado con ese id.'
+                });
+            }
             
             const filter = {employee:employeeid};
 
@@ -63,15 +71,16 @@ class EmployeeController{
 
     async create(req, res){
         try{
-            const {name, email, tel} = req.body;
+            const {body} = req;
+            const {name, email, tel} = body;
             
             if( !name || !email || !tel){
                 return response.status(403).send("Complete todos los campos obligatorios.")
             }
-            const Employee = await Employee.create({name, email, tel});
+            const employee = await Employee.create({name, email, tel});
             res.status(201).json({
                 message: 'success',
-                data: Employee
+                data: employee
             })
 
         }catch(error){
@@ -89,11 +98,11 @@ class EmployeeController{
             if( !name || !email || !tel){
                 return response.status(403).send("Complete todos los campos obligatorios.")
             }
-            const Employee = await Employee.findByIdAndUpdate(id, {name, email, tel}, {new: true});
+            const employee = await Employee.findByIdAndUpdate(id, {name, email, tel}, {new: true, runValidators: true});
 
             res.json({
                 message: 'success',
-                data: Employee
+                data: employee
             })
 
         }catch(error){
@@ -106,9 +115,9 @@ class EmployeeController{
     async delete(req, res){
         try{
             const id = req.params.id;
-            const Employee = await Employee.findByIdAndDelete(id);
+            const employee = await Employee.findByIdAndDelete(id);
 
-            if(!Employee){
+            if(!employee){
                 return res.status(404).json({
                 message: 'Empleado no encontrado.'
             })

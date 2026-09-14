@@ -25,6 +25,6 @@ const ClientSchema = new Schema({
     
 });
 
-const Client = mongoose.model('clients', ClientSchema);
+const Client = mongoose.model('client', ClientSchema);
 
 export default Client;

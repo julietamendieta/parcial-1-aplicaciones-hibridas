@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 class ClientController{
     async getAll(req, res){
         try{
-            const clients = await Client.find();
+            const clients = await Client.find().select('name email tel');
 
             res.json({
                 message: 'success',
@@ -22,16 +22,16 @@ class ClientController{
     async getById(req, res){
         try{
             const id = req.params.id;
-            const Client = await Client.findById(id);
+            const client = await Client.findById(id).select('name email tel');
             
-            if(!Client){
+            if(!client){
                 return res.status(404).json({
                     message: 'No encontrado.',
                 });
             }
             res.json({
                 message: 'success',
-                data: Client
+                data: client
             });
             
 
@@ -45,6 +45,14 @@ class ClientController{
     async getApptbyClient(req, res){
         try{
             const clientid = req.params.clientid;
+
+            const clientExists = await Client.findById(clientid);
+            
+            if(!clientExists){
+                return res.status(404).json({
+                    message: 'No hay ningún cliente registrado con ese id.'
+                });
+            }
             
             const filter = {client:clientid};
 
@@ -88,23 +96,20 @@ class ClientController{
 
     async update(req, res){
         try{
-            const {id} = req.params;
-            const {body} = request;
-            const {name, email, password, tel} = body;
-
+            const id = req.params.id;
+            const {name, email, password, tel} = req.body;
+            
             if( !name || !email || !password || !tel){
-                return response.status(403).send("Faltan parámetros")
+                return response.status(403).send("Complete todos los campos obligatorios.")
             }
+
             const passwordHash = await bcrypt.hash(password, 10);
-            const data = {
-                name,
-                email,
-                password: passwordHash,
-                tel
-            }
-            const client = await Client.findByIdAndUpdate(id, data);
-            client.save();
-            response.status(200).json({message: 'Datos actualizados', data: {}});
+            const client = await Client.findByIdAndUpdate(id, {name, email, password: passwordHash, tel}, {new: true, runValidators: true});
+
+            res.json({
+                message: 'success',
+                data: client
+            })
         }catch(error){
             res.status(500).json({
                 message: 'Error al actualizar los datos del cliente.'
@@ -115,9 +120,9 @@ class ClientController{
     async delete(req, res){
         try{
             const id = req.params.id;
-            const Client = await Client.findByIdAndDelete(id);
+            const client = await Client.findByIdAndDelete(id);
 
-            if(!Client){
+            if(!client){
                 return res.status(404).json({
                 message: 'Cliente no encontrado.'
             })
@@ -128,7 +133,7 @@ class ClientController{
 
         }catch(error){
             res.status(500).json({
-                message: 'Error al eliminarel cliente.'
+                message: 'Error al eliminar el cliente.'
             })
         }
     }

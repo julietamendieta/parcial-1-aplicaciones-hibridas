@@ -1,4 +1,6 @@
 import Appointment from "../models/AppointmentModel.js";
+import Employee from "../models/EmployeeModel.js";
+import Client from "../models/ClientModel.js";
 
 class AppointmentController{
     async getAll(req, res){
@@ -20,16 +22,16 @@ class AppointmentController{
     async getById(req, res){
         try{
             const id = req.params.id;
-            const Appointment = await Appointment.findById(id).populate(['client','employee']);
+            const appointment = await Appointment.findById(id).populate(['client','employee']);
             
-            if(!Appointment){
+            if(!appointment){
                 return res.status(404).json({
                     message: 'No encontrado.',
                 });
             }
             res.json({
                 message: 'success',
-                data: Appointment
+                data: appointment
             });
             
 
@@ -42,15 +44,32 @@ class AppointmentController{
 
     async create(req, res){
         try{
-            const {time, duration, client} = req.body;
+            const {time, duration, client, employee} = req.body;
             
-            if( !time || !duration || !client){
+            if( !time || !duration || !client || !employee){
                 return response.status(403).send("Complete todos los campos obligatorios.")
             }
-            const Appointment = await Appointment.create({time, duration, client});
+
+            const employeeExists = await Employee.findById(employee);
+
+            const clientExists = await Client.findById(client);
+
+            if(!employeeExists){
+                return res.status(404).json({
+                    message: 'No hay ningún empleado registrado con ese nombre.'
+                });
+            }
+
+            if(!clientExists){
+                return res.status(404).json({
+                    message: 'No hay ningún cliente registrado con ese nombre.'
+                });
+            }
+
+            const appointment = await Appointment.create({time, duration, client, employee});
             res.status(201).json({
                 message: 'success',
-                data: Appointment
+                data: appointment
             })
 
         }catch(error){
@@ -63,16 +82,16 @@ class AppointmentController{
     async update(req, res){
         try{
             const id = req.params.id;
-            const {time, duration, client} = req.body;
+            const {time, duration, client, employee} = req.body;
             
-            if( !time || !duration || !client){
+            if( !time || !duration || !client || !employee){
                 return response.status(403).send("Complete todos los campos obligatorios.")
             }
-            const Appointment = await Appointment.findByIdAndUpdate(id, {time, duration, client}, {new: true});
+            const appointment = await Appointment.findByIdAndUpdate(id, {time, duration, client, employee}, {new: true, runValidators: true});
 
             res.json({
                 message: 'success',
-                data: Appointment
+                data: appointment
             })
 
         }catch(error){
@@ -85,9 +104,9 @@ class AppointmentController{
     async delete(req, res){
         try{
             const id = req.params.id;
-            const Appointment = await Appointment.findByIdAndDelete(id);
+            const appointment = await Appointment.findByIdAndDelete(id);
 
-            if(!Appointment){
+            if(!appointment){
                 return res.status(404).json({
                 message: 'Turno no encontrado.'
             })

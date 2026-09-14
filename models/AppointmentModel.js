@@ -11,12 +11,12 @@ const AppointmentSchema = new mongoose.Schema({
     },
     client: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Client',
+        ref: 'client',
         required: true
     },
     employee: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Employee',
+        ref: 'employee',
         required: true
     }
 });
