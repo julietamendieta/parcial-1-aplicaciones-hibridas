@@ -75,7 +75,7 @@ class ClientController{
             const {name, email, password, tel} = body;
 
             if( !name || !email || !password || !tel){
-                return res.status(403).send("Complete todos los campor obligatorios.")
+                return res.status(403).send("Complete todos los campos obligatorios.")
             }
             const passwordHash = await bcrypt.hash(password, 10);
             const newClient = new Client({

@@ -30,7 +30,7 @@ class EmployeeController{
             }
             res.json({
                 message: 'success',
-                data: Employee
+                data: employee
             });
             
 
@@ -75,7 +75,7 @@ class EmployeeController{
             const {name, email, tel} = body;
             
             if( !name || !email || !tel){
-                return response.status(403).send("Complete todos los campos obligatorios.")
+                return res.status(403).send("Complete todos los campos obligatorios.")
             }
             const employee = await Employee.create({name, email, tel});
             res.status(201).json({

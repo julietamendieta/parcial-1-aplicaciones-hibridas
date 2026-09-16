@@ -47,7 +47,7 @@ class AppointmentController{
             const {time, duration, client, employee} = req.body;
             
             if( !time || !duration || !client || !employee){
-                return response.status(403).send("Complete todos los campos obligatorios.")
+                return res.status(403).send("Complete todos los campos obligatorios.")
             }
 
             const employeeExists = await Employee.findById(employee);

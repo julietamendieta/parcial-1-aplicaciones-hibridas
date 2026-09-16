@@ -14,11 +14,6 @@ app.use(express.static('public'));
 const port = process.env.PORT;
 connectDB();
 
-app.get('/', (request, response) => {
-    console.log('Conectado')
-    response.send('Hola');
-});
-
 app.listen(port, () => {
     console.log(`Servidor en el puerto ${port}`)
 })

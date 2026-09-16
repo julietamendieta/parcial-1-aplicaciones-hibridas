@@ -1,5 +1,5 @@
 # Alumna:
--Mendieta, Julieta
+Mendieta, Julieta
 
 # Materia:
 Aplicaciones Híbridas
