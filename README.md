@@ -1,5 +1,4 @@
-# Alumnas:
--Inchauspe, Natalín Eliana
+# Alumna:
 -Mendieta, Julieta
 
 # Materia:
